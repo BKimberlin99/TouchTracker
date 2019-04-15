@@ -20,6 +20,7 @@ class DrawView: UIView {
             }
         }
     }
+    var moveRecognizer: UIPanGestureRecognizer!
     
     @IBInspectable var finishedLineColor: UIColor = UIColor.black {
         didSet {
@@ -198,6 +199,27 @@ class DrawView: UIView {
         setNeedsDisplay()
     }
     
+    func longPress(_ gestureRecognizer: UIGestureRecognizer) {
+        print("Recognized a long press")
+        
+        if gestureRecognizer.state == .began {
+            let point = gestureRecognizer.location(in: self)
+            selectedLineIndex = indexOfLine(at: point)
+            
+            if selectedLineIndex != nil {
+                currentLines.removeAll()
+            }
+        } else if gestureRecognizer.state == .ended {
+            selectedLineIndex = nil
+        }
+        
+        setNeedsDisplay()
+    }
+    
+    func moveLine(_ gestureRecognizer: UIPanGestureRecognizer) {
+        print("Recognized a pan")
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
@@ -212,6 +234,15 @@ class DrawView: UIView {
         tapRecognizer.delaysTouchesBegan = true
         tapRecognizer.require(toFail: doubleTapRecognizer)
         addGestureRecognizer(tapRecognizer)
+        
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self,
+                                                               action: #selector(DrawView.longPress(_:)))
+        addGestureRecognizer(longPressRecognizer)
+        
+        moveRecognizer = UIPanGestureRecognizer(target: self,
+                                                action: #selector(DrawView.moveLine(_:)))
+        moveRecognizer.cancelsTouchesInView = false
+        addGestureRecognizer(moveRecognizer)
     }
 }
 
