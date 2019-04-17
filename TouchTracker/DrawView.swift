@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DrawView: UIView {
+class DrawView: UIView, UIGestureRecognizerDelegate {
     
     var currentLines = [NSValue:Line]()
     var finishedLines = [Line]()
@@ -218,6 +218,35 @@ class DrawView: UIView {
     
     func moveLine(_ gestureRecognizer: UIPanGestureRecognizer) {
         print("Recognized a pan")
+        
+        // If a line is selected...
+        if let index = selectedLineIndex {
+            // When the pan recognizer changes its position...
+            if gestureRecognizer.state == .changed {
+                // How far has the pan moved?
+                let translation = gestureRecognizer.translation(in: self)
+                
+                // Add the translation to the current beginning and end points of the line
+                // Make sure there are no copy and paste typos!
+                finishedLines[index].begin.x += translation.x
+                finishedLines[index].begin.y += translation.y
+                finishedLines[index].end.x += translation.x
+                finishedLines[index].end.y += translation.y
+                
+                gestureRecognizer.setTranslation(CGPoint.zero, in: self)
+                
+                // Redraw the screen
+                setNeedsDisplay()
+            }
+        } else {
+            // If no line is selected, do not do anything
+            return
+        }
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -241,6 +270,7 @@ class DrawView: UIView {
         
         moveRecognizer = UIPanGestureRecognizer(target: self,
                                                 action: #selector(DrawView.moveLine(_:)))
+        moveRecognizer.delegate = self
         moveRecognizer.cancelsTouchesInView = false
         addGestureRecognizer(moveRecognizer)
     }
