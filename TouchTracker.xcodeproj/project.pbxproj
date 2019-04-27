@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		78F6A68E2273E4670078E369 /* Circle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78F6A68D2273E4670078E369 /* Circle.swift */; };
 		CBA77080225E5251002E772B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA7707F225E5251002E772B /* AppDelegate.swift */; };
 		CBA77082225E5251002E772B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA77081225E5251002E772B /* ViewController.swift */; };
 		CBA77085225E5251002E772B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CBA77083225E5251002E772B /* Main.storyboard */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		78F6A68D2273E4670078E369 /* Circle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Circle.swift; sourceTree = "<group>"; };
 		CBA7707C225E5251002E772B /* TouchTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TouchTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CBA7707F225E5251002E772B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CBA77081225E5251002E772B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -61,6 +63,7 @@
 				CBA7707F225E5251002E772B /* AppDelegate.swift */,
 				CBA77081225E5251002E772B /* ViewController.swift */,
 				CBA77091225E52B5002E772B /* Line.swift */,
+				78F6A68D2273E4670078E369 /* Circle.swift */,
 				CBA77093225E5346002E772B /* DrawView.swift */,
 				CBA77083225E5251002E772B /* Main.storyboard */,
 				CBA77086225E5251002E772B /* Assets.xcassets */,
@@ -142,6 +145,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78F6A68E2273E4670078E369 /* Circle.swift in Sources */,
 				CBA77092225E52B5002E772B /* Line.swift in Sources */,
 				CBA77082225E5251002E772B /* ViewController.swift in Sources */,
 				CBA77094225E5346002E772B /* DrawView.swift in Sources */,

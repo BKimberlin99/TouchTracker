@@ -12,6 +12,11 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
     
     var currentLines = [NSValue:Line]()
     var finishedLines = [Line]()
+    
+    //Variables for holding circle information
+    var currentCircle = Circle()
+    var finishedCircles = [Circle]()
+    
     var selectedLineIndex: Int? {
         didSet {
             if selectedLineIndex == nil {
@@ -62,6 +67,16 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
             stroke(line)
         }
         
+        //Draw Circles
+        finishedLineColor.setStroke()
+        for circle in finishedCircles {
+            let path = UIBezierPath(ovalIn: circle.rect)
+            path.lineWidth = lineThickness
+            path.stroke()
+        }
+        currentLineColor.setStroke()
+        UIBezierPath(ovalIn: currentCircle.rect).stroke()
+        
         if let index = selectedLineIndex {
             UIColor.green.setStroke()
             let selectedLine = finishedLines[index]
@@ -95,15 +110,22 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
         // Log statement to see the order of events
         print(#function)
         
-        for touch in touches {
-            let location = touch.location(in: self)
-            
-            let newLine = Line(begin: location, end: location)
-            
-            let key = NSValue(nonretainedObject: touch)
-            currentLines[key] = newLine
+        // If more than one touch is recognized, a circle is being drawn
+        if touches.count == 2 {
+            let touchesArray = Array(touches)
+            let location1 = touchesArray[0].location(in: self)
+            let location2 = touchesArray[1].location(in: self)
+            currentCircle = Circle(point1: location1, point2: location2)
+        } else {
+            for touch in touches {
+                let location = touch.location(in: self)
+                
+                let newLine = Line(begin: location, end: location)
+                
+                let key = NSValue(nonretainedObject: touch)
+                currentLines[key] = newLine
+            }
         }
-        
         setNeedsDisplay()
     }
     
@@ -111,11 +133,18 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
         // Log statement to see the order of events
         print(#function)
         
-        for touch in touches {
-            let key = NSValue(nonretainedObject: touch)
-            currentLines[key]?.end = touch.location(in: self)
+        // If more than one touch is recognized, a circle is being drawn
+        if touches.count == 2 {
+            let touchesArray = Array(touches)
+            let location1 = touchesArray[0].location(in: self)
+            let location2 = touchesArray[1].location(in: self)
+            currentCircle = Circle(point1: location1, point2: location2)
+        } else {
+            for touch in touches {
+                let key = NSValue(nonretainedObject: touch)
+                currentLines[key]?.end = touch.location(in: self)
+            }
         }
-        
         setNeedsDisplay()
     }
     
@@ -123,17 +152,27 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
         // Log statement to see the order of events
         print(#function)
         
-        for touch in touches {
-            let key = NSValue(nonretainedObject: touch)
-            if var line = currentLines[key] {
-                line.end = touch.location(in: self)
-                
-                finishedLines.append(line)
-                currentLines.removeValue(forKey: key)
-            }
+        // If more htan one touch is recognized, a circle is being drawn
+        if touches.count == 2 {
+            let touchesArray = Array(touches)
+            let location1 = touchesArray[0].location(in: self)
+            let location2 = touchesArray[1].location(in: self)
+            currentCircle = Circle(point1: location1, point2: location2)
+            finishedCircles.append(currentCircle)
+            currentCircle = Circle()
+        } else {
+            for touch in touches {
+                let key = NSValue(nonretainedObject: touch)
+                if var line = currentLines[key] {
+                    line.end = touch.location(in: self)
+                    
+                    finishedLines.append(line)
+                    currentLines.removeValue(forKey: key)
+                }
         }
         
         setNeedsDisplay()
+        }
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -141,6 +180,7 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
         print(#function)
         
         currentLines.removeAll()
+        currentCircle = Circle()
         
         setNeedsDisplay()
     }
