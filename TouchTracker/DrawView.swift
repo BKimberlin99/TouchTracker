@@ -17,6 +17,8 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
     var currentCircle = Circle()
     var finishedCircles = [Circle]()
     
+    var longPressRecognizer: UILongPressGestureRecognizer!
+    
     var selectedLineIndex: Int? {
         didSet {
             if selectedLineIndex == nil {
@@ -259,6 +261,9 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
     
     func moveLine(_ gestureRecognizer: UIPanGestureRecognizer) {
         print("Recognized a pan")
+        guard longPressRecognizer.state == .changed || longPressRecognizer.state == .ended else {
+            return
+        }
         
         // If a line is selected...
         if let index = selectedLineIndex {
@@ -305,8 +310,9 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
         tapRecognizer.require(toFail: doubleTapRecognizer)
         addGestureRecognizer(tapRecognizer)
         
-        let longPressRecognizer = UILongPressGestureRecognizer(target: self,
-                                                               action: #selector(DrawView.longPress(_:)))
+        // Edited to fix bug of moving a line when drawing a new one when the menu is present
+        longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(DrawView.longPress(_:)))
+        
         addGestureRecognizer(longPressRecognizer)
         
         moveRecognizer = UIPanGestureRecognizer(target: self,
