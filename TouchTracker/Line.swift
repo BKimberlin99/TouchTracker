@@ -13,6 +13,7 @@ import UIKit
 struct Line {
     var begin = CGPoint.zero
     var end = CGPoint.zero
+    var lineWidth: CGFloat = 10
 }
 
 //Sets up ability to check the angle of the line being drawn
@@ -35,3 +36,5 @@ extension Line {
         return colors[colorIndex]
     }
 }
+
+

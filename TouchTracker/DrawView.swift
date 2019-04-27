@@ -29,6 +29,18 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
     }
     var moveRecognizer: UIPanGestureRecognizer!
     
+    //New Properties for speed and size challenge
+    var maxRecordedVelocity: CGFloat = CGFloat.leastNonzeroMagnitude
+    var minRecordedVelocity: CGFloat = CGFloat.greatestFiniteMagnitude
+    var currentVelocity: CGFloat = 0
+    var currentLineWidth: CGFloat {
+        let maxLineWidth: CGFloat = 20
+        let minLineWidth: CGFloat = 1
+        // Thinner line for faster velocity
+        let lineWidth = (maxRecordedVelocity - currentVelocity) / (maxRecordedVelocity - minRecordedVelocity) * (maxLineWidth - minLineWidth) + minLineWidth
+        return lineWidth
+    }
+    
     @IBInspectable var finishedLineColor: UIColor = UIColor.black {
         didSet {
             setNeedsDisplay()
@@ -49,7 +61,8 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
     
     func stroke(_ line: Line) {
         let path = UIBezierPath()
-        path.lineWidth = lineThickness
+        //path.lineWidth = lineThickness
+        path.lineWidth = line.lineWidth
         path.lineCapStyle = .round
         
         path.move(to: line.begin)
@@ -122,7 +135,8 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
             for touch in touches {
                 let location = touch.location(in: self)
                 
-                let newLine = Line(begin: location, end: location)
+                //let newLine = Line(begin: location, end: location)
+                let newLine = Line(begin: location, end: location, lineWidth: currentLineWidth)
                 
                 let key = NSValue(nonretainedObject: touch)
                 currentLines[key] = newLine
@@ -168,6 +182,7 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
                 if var line = currentLines[key] {
                     line.end = touch.location(in: self)
                     
+                    line.lineWidth = currentLineWidth
                     finishedLines.append(line)
                     currentLines.removeValue(forKey: key)
                 }
@@ -261,6 +276,18 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
     
     func moveLine(_ gestureRecognizer: UIPanGestureRecognizer) {
         print("Recognized a pan")
+
+        // Check speed of motion
+        let velocityInXY = gestureRecognizer.velocity(in: self)
+        currentVelocity = hypot(velocityInXY.x, velocityInXY.y)
+        
+        maxRecordedVelocity = max(maxRecordedVelocity, currentVelocity)
+        minRecordedVelocity = min(minRecordedVelocity, currentVelocity)
+        
+        print("Current Drawing Velocity: \(currentVelocity) points per second")
+        print("maxRecordedVelocity: \(maxRecordedVelocity) points per second")
+        print("minRecordedVelocity: \(minRecordedVelocity) points per second")
+        
         guard longPressRecognizer.state == .changed || longPressRecognizer.state == .ended else {
             return
         }
