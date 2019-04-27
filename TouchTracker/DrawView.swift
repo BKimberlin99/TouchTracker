@@ -51,13 +51,14 @@ class DrawView: UIView, UIGestureRecognizerDelegate {
     }
     
     override func draw(_ rect: CGRect) {
-        finishedLineColor.setStroke()
         for line in finishedLines {
+            line.color.setStroke() //Change color based on angle
             stroke(line)
         }
         
         currentLineColor.setStroke()
         for (_, line) in currentLines {
+            line.color.setStroke() //Change color based on angle
             stroke(line)
         }
         
